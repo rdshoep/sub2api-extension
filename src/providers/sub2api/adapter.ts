@@ -215,19 +215,22 @@ export class Sub2ApiAdapter implements PlatformAdapter {
     }
 
     const trend = snap.data.trend ?? []
-    const useTrend = range !== 'today' && trend.length > 0
+    const models = snap.data.models ?? []
+    const useRangeTotals = range !== 'today' && trend.length > 0
+    // snapshot-v2 `stats` is always today/lifetime; trend + models follow start/end.
     return normalizeTodaySnapshot({
       connectionId: ctx.connection.id,
       timezone: ctx.timezone,
       stats: snap.data.stats,
-      models: snap.data.models,
+      models,
       generatedAt: snap.data.generated_at,
       startDate: snap.data.start_date ?? window.start_date,
       errorCount,
       errorRate,
-      requests: useTrend ? trend.reduce((n, p) => n + (p.requests ?? 0), 0) : undefined,
-      tokens: useTrend ? trend.reduce((n, p) => n + (p.total_tokens ?? 0), 0) : undefined,
-      actualCost: useTrend ? trend.reduce((n, p) => n + (p.actual_cost ?? 0), 0) : undefined,
+      requests: useRangeTotals ? trend.reduce((n, p) => n + (p.requests ?? 0), 0) : undefined,
+      tokens: useRangeTotals ? trend.reduce((n, p) => n + (p.total_tokens ?? 0), 0) : undefined,
+      actualCost: useRangeTotals ? trend.reduce((n, p) => n + (p.actual_cost ?? 0), 0) : undefined,
+      accountCost: useRangeTotals ? models.reduce((n, m) => n + (m.account_cost ?? 0), 0) : undefined,
       trend,
       usersTrend: snap.data.users_trend,
     })

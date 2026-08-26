@@ -12,7 +12,9 @@ pnpm zip
 ```
 
 Chrome output: `.output/chrome-mv3/`
-Zip: `.output/sub2api-console-*.zip` (WXT zip target)
+Zips: `pnpm zip:chrome` / `pnpm zip:edge` → `.output/*.zip`
+
+Push to `main` runs `.github/workflows/pages.yml`: build both zips, copy them to `site/downloads/`, deploy GitHub Pages. The landing page links those zips. Do **not** commit zips.
 
 ## Load unpacked
 
@@ -42,10 +44,10 @@ Write tests against production are out of scope. Use the mock (`tests/mocks`) fo
 
 ## GitHub Pages
 
-Push to `main` deploys `site/` via `.github/workflows/pages.yml`.
+Push to `main` deploys `site/` via `.github/workflows/pages.yml` (includes Chrome/Edge sideload zips).
 Public URL: https://rdshoep.com/sub2api-extension/
 
-Screenshots live in `docs/images/` (README) and are copied into `site/images/` for the landing page.
+Screenshots live in `docs/images/` (README) and `site/images/`. Downloads: `site/downloads/*.zip` (generated in CI).
 
 ## AI builder
 

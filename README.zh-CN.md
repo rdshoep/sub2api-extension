@@ -78,19 +78,22 @@
 
 ## 安装
 
-需要 Node.js 20+ 和 [pnpm](https://pnpm.io/)。克隆本仓库后：
+不经过 Chrome 网上应用店 / Edge 加载项，下载 zip 即可装（商店上架需 Sub2API 作者授权）：
+
+1. 在[介绍页](https://rdshoep.com/sub2api-extension/)下载 [Chrome 安装包](https://rdshoep.com/sub2api-extension/downloads/sub2api-console-chrome.zip) 或 [Edge 安装包](https://rdshoep.com/sub2api-extension/downloads/sub2api-console-edge.zip)
+2. 解压到一个固定目录
+3. 打开 `chrome://extensions` 或 `edge://extensions`，打开 **开发者模式**
+4. **加载已解压的扩展程序**，选中解压出来的文件夹
+5. 把图标钉到工具栏，点击即可
+
+从源码构建（Node.js 20+ 和 [pnpm](https://pnpm.io/)）：
 
 ```bash
 pnpm install
-pnpm build
+pnpm zip:all
 ```
 
-1. 打开 `chrome://extensions` 或 `edge://extensions`
-2. 打开右上角 **开发者模式**
-3. **加载已解压的扩展程序**，选中仓库里的 `.output/chrome-mv3`
-4. 把图标钉到工具栏，点击即可打开
-
-打包 zip：`pnpm zip` → `.output/*.zip`
+产物：`.output/chrome-mv3`（加载已解压）以及 `.output/*.zip`。
 
 ## 第一次使用
 

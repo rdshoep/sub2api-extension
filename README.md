@@ -78,19 +78,22 @@ Landing page: [rdshoep.com/sub2api-extension](https://rdshoep.com/sub2api-extens
 
 ## Install
 
-Node.js 20+ and [pnpm](https://pnpm.io/). After cloning:
+Sideload zip (no Chrome Web Store / Edge Add-ons yet):
+
+1. Download [Chrome](https://rdshoep.com/sub2api-extension/downloads/sub2api-console-chrome.zip) or [Edge](https://rdshoep.com/sub2api-extension/downloads/sub2api-console-edge.zip) from the [landing page](https://rdshoep.com/sub2api-extension/)
+2. Unzip
+3. Open `chrome://extensions` or `edge://extensions`, enable **Developer mode**
+4. **Load unpacked** and select the unzipped folder
+5. Pin the icon and click it
+
+From source (Node.js 20+ and [pnpm](https://pnpm.io/)):
 
 ```bash
 pnpm install
-pnpm build
+pnpm zip:all
 ```
 
-1. Open `chrome://extensions` or `edge://extensions`
-2. Enable **Developer mode**
-3. **Load unpacked** and select `.output/chrome-mv3`
-4. Pin the icon and click it
-
-Zip: `pnpm zip` → `.output/*.zip`
+Output: `.output/chrome-mv3` (load unpacked) and `.output/*.zip`.
 
 ## First run
 

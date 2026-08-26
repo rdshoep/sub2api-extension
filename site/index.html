@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sub2API Console</title>
+    <title>Sub2API Console — 多实例控制台</title>
     <meta
       name="description"
-      content="Chrome / Edge multi-instance Sub2API operations console. Quota, usage, users, and errors in a 480×600 popup."
+      content="管多台 Sub2API，不用来回切后台。Chrome / Edge 弹窗里看额度、花费、用户和异常。社区扩展，下载 zip 即可安装，尚未上架应用商店。"
     />
     <link rel="icon" href="./icon/logo.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./icon/128.png" />
@@ -14,35 +14,36 @@
       :root {
         --primary: #14b8a6;
         --primary-dark: #0f766e;
-        --page: #f8fafc;
+        --page: #f4fbf9;
         --card: #ffffff;
         --text: #0f172a;
         --muted: #64748b;
-        --border: #e2e8f0;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+        --border: #d9efe9;
+        --shadow: 0 10px 30px rgba(15, 118, 110, 0.08);
       }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
+      * { box-sizing: border-box; }
+      html, body {
         margin: 0;
-        background: var(--page);
+        background:
+          radial-gradient(900px 420px at 12% -10%, rgba(20, 184, 166, 0.16), transparent 60%),
+          radial-gradient(700px 380px at 100% 0%, rgba(56, 117, 246, 0.08), transparent 50%),
+          var(--page);
         color: var(--text);
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC',
           'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-        line-height: 1.55;
+        line-height: 1.6;
       }
-      a {
-        color: var(--primary-dark);
-      }
+      a { color: var(--primary-dark); }
       header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.86);
         border-bottom: 1px solid var(--border);
-        background: var(--card);
       }
-      .bar,
-      .wrap {
-        max-width: 920px;
+      .bar, .wrap {
+        max-width: 980px;
         margin: 0 auto;
         padding: 0 20px;
       }
@@ -50,118 +51,129 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        min-height: 56px;
+        min-height: 58px;
       }
       .brand {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-weight: 650;
+        font-weight: 700;
         text-decoration: none;
         color: inherit;
       }
-      .brand img {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-      }
-      .actions {
-        display: flex;
-        gap: 8px;
-      }
+      .brand img { width: 32px; height: 32px; border-radius: 8px; }
+      .actions { display: flex; gap: 8px; flex-wrap: wrap; }
       .btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         border: 1px solid var(--border);
         background: var(--card);
         color: var(--text);
         border-radius: 999px;
-        padding: 6px 12px;
+        padding: 8px 14px;
         font-size: 13px;
         text-decoration: none;
         cursor: pointer;
+        font-weight: 600;
       }
       .btn.primary {
         background: var(--primary);
         border-color: var(--primary);
         color: #fff;
       }
-      .hero {
-        padding: 40px 0 16px;
-        text-align: center;
+      .btn.ghost { background: transparent; }
+      .hero { padding: 48px 0 20px; text-align: center; }
+      .eyebrow {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #ecfdf8;
+        color: var(--primary-dark);
+        font-size: 12px;
+        font-weight: 650;
       }
       .hero h1 {
-        margin: 12px 0 8px;
-        font-size: 28px;
+        margin: 14px auto 10px;
+        max-width: 18em;
+        font-size: clamp(28px, 4.4vw, 42px);
+        line-height: 1.2;
       }
       .hero p {
-        margin: 0 auto;
+        margin: 0 auto 20px;
         max-width: 640px;
         color: var(--muted);
+        font-size: 16px;
       }
+      .cta { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+      .fine {
+        margin: 12px auto 0;
+        max-width: 560px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .version { font-variant-numeric: tabular-nums; }
       .shots {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px;
-        padding: 24px 0 8px;
+        padding: 16px 0 8px;
       }
       figure {
         margin: 0;
         background: var(--card);
         border: 1px solid var(--border);
-        border-radius: 16px;
+        border-radius: 18px;
         overflow: hidden;
         box-shadow: var(--shadow);
       }
-      figure img {
-        display: block;
-        width: 100%;
-        height: auto;
-      }
+      figure img { display: block; width: 100%; height: auto; }
       figcaption {
         padding: 10px 12px;
         font-size: 13px;
         color: var(--muted);
         border-top: 1px solid var(--border);
       }
-      section {
-        padding: 12px 0 8px;
+      .grid3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
       }
-      h2 {
-        font-size: 18px;
-        margin: 18px 0 8px;
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: var(--shadow);
       }
-      ul {
-        margin: 0;
-        padding-left: 18px;
-        color: #334155;
-      }
-      pre {
-        overflow: auto;
-        background: #0f172a;
-        color: #e2e8f0;
+      .card h3 { margin: 0 0 6px; font-size: 16px; }
+      .card p { margin: 0; color: var(--muted); font-size: 14px; }
+      section { padding: 18px 0; }
+      h2 { font-size: 22px; margin: 0 0 12px; }
+      ol, ul { margin: 0; padding-left: 18px; color: #334155; }
+      ol li, ul li { margin: 6px 0; }
+      .note {
+        margin-top: 12px;
+        padding: 12px 14px;
         border-radius: 12px;
-        padding: 14px 16px;
+        background: #fff7ed;
+        color: #9a3412;
         font-size: 13px;
       }
       footer {
-        margin-top: 32px;
-        padding: 20px 0 40px;
+        margin-top: 24px;
+        padding: 22px 0 48px;
         color: var(--muted);
         font-size: 13px;
         border-top: 1px solid var(--border);
       }
-      [data-lang] {
-        display: none;
-      }
+      [data-lang] { display: none; }
       html[lang='zh-CN'] [data-lang='zh'],
-      html[lang='en'] [data-lang='en'] {
-        display: revert;
-      }
-      @media (max-width: 720px) {
-        .shots {
-          grid-template-columns: 1fr;
-        }
+      html[lang='en'] [data-lang='en'] { display: revert; }
+      @media (max-width: 760px) {
+        .shots, .grid3 { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -173,73 +185,118 @@
           Sub2API Console
         </a>
         <div class="actions">
-          <button class="btn" id="lang-toggle" type="button">English</button>
-          <a class="btn primary" href="https://github.com/rdshoep/sub2api-extension">GitHub</a>
+          <button class="btn ghost" id="lang-toggle" type="button">English</button>
+          <a class="btn" href="https://github.com/rdshoep/sub2api-extension">GitHub</a>
+          <a class="btn primary" href="./downloads/sub2api-console-chrome.zip">Chrome</a>
         </div>
       </div>
     </header>
 
     <main class="wrap">
       <div class="hero">
-        <img src="./icon/128.png" width="72" height="72" alt="Sub2API Console" />
-        <h1 data-lang="zh">Chrome / Edge 上的 Sub2API 多实例控制台</h1>
-        <h1 data-lang="en">A multi-instance Sub2API console for Chrome / Edge</h1>
+        <div class="eyebrow" data-lang="zh">社区扩展 · 下载安装包即可用 · 尚未上架商店</div>
+        <div class="eyebrow" data-lang="en">Community extension · Sideload zip · Not on the stores yet</div>
+        <h1 data-lang="zh">多台 Sub2API，一个弹窗看完额度和花费</h1>
+        <h1 data-lang="en">Several Sub2API boxes. One popup for quota and spend.</h1>
         <p data-lang="zh">
-          点一下工具栏图标，就能看额度、用量、用户和异常，而不用打开后台网页。480×600 弹窗，不注入页面。
+          点工具栏图标就能看剩余配额、谁在烧 Token、最近异常。不用再在后台标签页之间来回切。
+          Chrome / Edge 都能装，安装包从本页直接下载。
         </p>
         <p data-lang="en">
-          Click the toolbar icon to see quota, usage, users, and errors — without opening the admin site. 480×600 popup, no content scripts.
+          Click the toolbar icon for remaining quota, who is burning tokens, and recent errors —
+          without hopping admin tabs. Chrome and Edge. Download the zip here.
+        </p>
+        <div class="cta">
+          <a class="btn primary" href="./downloads/sub2api-console-chrome.zip" data-lang="zh">下载 Chrome 安装包</a>
+          <a class="btn primary" href="./downloads/sub2api-console-chrome.zip" data-lang="en">Download for Chrome</a>
+          <a class="btn" href="./downloads/sub2api-console-edge.zip" data-lang="zh">下载 Edge 安装包</a>
+          <a class="btn" href="./downloads/sub2api-console-edge.zip" data-lang="en">Download for Edge</a>
+        </div>
+        <p class="fine">
+          <span data-lang="zh">当前版本</span><span data-lang="en">Version</span>
+          <span class="version" id="ext-version">1.0.0</span>
+          ·
+          <span data-lang="zh">zip 解压后用开发者模式加载。等 Sub2API 作者授权后，再考虑上架 Chrome 应用商店。</span>
+          <span data-lang="en">Unzip and load in Developer mode. Chrome Web Store listing waits on Sub2API author approval.</span>
         </p>
       </div>
 
       <div class="shots">
         <figure>
           <img src="./images/screenshot-overview.png" alt="Overview" width="480" />
-          <figcaption data-lang="zh">概览：24 小时指标、多用户 Token 趋势、自动刷新倒计时</figcaption>
-          <figcaption data-lang="en">Overview: 24h metrics, per-user token trend, auto-refresh countdown</figcaption>
+          <figcaption data-lang="zh">概览：区间指标、多用户 Token 趋势、30 秒自动刷新</figcaption>
+          <figcaption data-lang="en">Overview: range metrics, per-user token trend, 30s auto-refresh</figcaption>
         </figure>
         <figure>
           <img src="./images/screenshot-accounts.png" alt="Accounts" width="480" />
-          <figcaption data-lang="zh">账号：5h / 7d 环形剩余、刷新倒计时、置顶与单卡刷新</figcaption>
-          <figcaption data-lang="en">Accounts: 5h / 7d remaining rings, reset countdown, pin and per-card refresh</figcaption>
+          <figcaption data-lang="zh">账号：5h / 7d 剩余圆环、刷新倒计时、置顶常用账号</figcaption>
+          <figcaption data-lang="en">Accounts: 5h / 7d remaining rings, reset countdown, pin favorites</figcaption>
         </figure>
       </div>
 
       <section>
-        <h2 data-lang="zh">能做什么</h2>
-        <h2 data-lang="en">What it does</h2>
-        <ul data-lang="zh">
-          <li>添加任意数量 Sub2API 站点，在「全部实例」和某一台之间切换</li>
-          <li>概览把请求量、Token、费用、错误加总；配额剩余不会被平均掉</li>
-          <li>账号卡片显示平台 Logo 和 5h / 7d 剩余；数据过期时圆环变灰仍保留进度</li>
-          <li>用户按今日消费排序，可调整余额或重置平台窗口（需允许写入）</li>
-          <li>凭证默认记住且不锁密钥；也可为单个实例配置密码锁定</li>
-        </ul>
-        <ul data-lang="en">
-          <li>Add any number of Sub2API sites; switch All instances vs a single site</li>
-          <li>Overview sums requests, tokens, cost, and errors — remaining quota is never averaged</li>
-          <li>Account cards show platform logos and 5h / 7d remaining; stale rings stay gray with last progress</li>
-          <li>Users ranked by today’s spend; optional balance / quota writes with a reason</li>
-          <li>Secrets are remembered without a password by default; optional per-instance lock</li>
-        </ul>
+        <h2 data-lang="zh">为什么用它</h2>
+        <h2 data-lang="en">Why it exists</h2>
+        <div class="grid3">
+          <article class="card">
+            <h3 data-lang="zh">多实例加总</h3>
+            <h3 data-lang="en">Add instances, then add the numbers</h3>
+            <p data-lang="zh">全部实例把请求、Token、花费、错误加在一起；配额剩余不会被平均掉。某一台挂了，其它台照常显示。</p>
+            <p data-lang="en">All-instances sums requests, tokens, spend, and errors. Remaining quota is never averaged. One site down does not blank the rest.</p>
+          </article>
+          <article class="card">
+            <h3 data-lang="zh">额度一眼看完</h3>
+            <h3 data-lang="en">Quota at a glance</h3>
+            <p data-lang="zh">每张账号卡片两个环：5 小时和 7 天还剩多少、多久刷新。数据过期时环变灰，进度还在。</p>
+            <p data-lang="en">Two rings per account: 5h and 7d remaining, plus time until reset. Stale data goes gray but keeps the last progress.</p>
+          </article>
+          <article class="card">
+            <h3 data-lang="zh">花费和趋势对齐</h3>
+            <h3 data-lang="en">Spend that matches the range</h3>
+            <p data-lang="zh">今日 / 24 小时 / 近一周切换时，实际扣费和账号成本走同一时间窗，不再一个变、一个停在今日。</p>
+            <p data-lang="en">Today / 24h / 7d: actual cost and account cost use the same window. One number no longer freezes on today.</p>
+          </article>
+        </div>
       </section>
 
       <section>
-        <h2 data-lang="zh">安装</h2>
-        <h2 data-lang="en">Install</h2>
-        <p data-lang="zh">需要 Node.js 20+ 和 pnpm。克隆仓库后：</p>
-        <p data-lang="en">Node.js 20+ and pnpm. After cloning:</p>
-        <pre>pnpm install
-pnpm build</pre>
+        <h2 data-lang="zh">两分钟装上</h2>
+        <h2 data-lang="en">Install in two minutes</h2>
+        <ol data-lang="zh">
+          <li>下载上面的 Chrome 或 Edge 安装包（zip），解压到一个固定目录。</li>
+          <li>打开 <code>chrome://extensions</code> 或 <code>edge://extensions</code>，打开右上角<strong>开发者模式</strong>。</li>
+          <li>点「加载已解压的扩展程序」，选中解压出来的文件夹。</li>
+          <li>把图标钉到工具栏，点开后到「实例」里填站点地址和管理员凭证。</li>
+        </ol>
+        <ol data-lang="en">
+          <li>Download the Chrome or Edge zip and unzip it somewhere permanent.</li>
+          <li>Open <code>chrome://extensions</code> or <code>edge://extensions</code> and enable <strong>Developer mode</strong>.</li>
+          <li>Load unpacked and select the unzipped folder.</li>
+          <li>Pin the icon, open Instances, and paste the site URL plus admin secret.</li>
+        </ol>
+        <p class="note" data-lang="zh">
+          不经过 Chrome 网上应用店 / Edge 加载项也可以用：这就是开发者模式加载。商店上架需要 Sub2API 作者授权，沟通完成前请用本页安装包。
+        </p>
+        <p class="note" data-lang="en">
+          You do not need the Chrome Web Store or Edge Add-ons: this is Developer-mode sideload.
+          Store listing waits on Sub2API author approval — use the zip until then.
+        </p>
+      </section>
+
+      <section>
+        <h2 data-lang="zh">安全上怎么做的</h2>
+        <h2 data-lang="en">How it treats your secrets</h2>
         <ul data-lang="zh">
-          <li>打开 chrome://extensions 或 edge://extensions</li>
-          <li>打开开发者模式，加载已解压的扩展，选中 <code>.output/chrome-mv3</code></li>
-          <li>把图标钉到工具栏后点击即可</li>
+          <li>没有 content script，不会改你正在看的网页。</li>
+          <li>安装时不要全部网站权限；只有你添加某个实例时，才申请该站点的精确 origin。</li>
+          <li>凭证默认记住且不锁密钥（推荐）；也可以给单个实例加密码，或只保存在当前会话。</li>
+          <li>写余额 / 重置配额必须关掉只读，并填写原因。</li>
         </ul>
         <ul data-lang="en">
-          <li>Open chrome://extensions or edge://extensions</li>
-          <li>Enable Developer mode, Load unpacked, select <code>.output/chrome-mv3</code></li>
-          <li>Pin the icon and click it</li>
+          <li>No content scripts — the current page is untouched.</li>
+          <li>No all-sites permission at install; adding an instance requests that origin only.</li>
+          <li>Secrets are remembered without a password by default; optional per-instance lock or session-only.</li>
+          <li>Balance and quota writes need Allow Writes plus a reason.</li>
         </ul>
       </section>
     </main>
@@ -247,8 +304,8 @@ pnpm build</pre>
     <footer>
       <div class="wrap">
         <p data-lang="zh">
-          这不是 <a href="https://github.com/Wei-Shaw/sub2api">Sub2API</a> 官方扩展，而是对接其 Admin API 的社区控制台。源码：
-          <a href="https://github.com/rdshoep/sub2api-extension">rdshoep/sub2api-extension</a>
+          这不是 <a href="https://github.com/Wei-Shaw/sub2api">Sub2API</a> 官方扩展，而是对接其 Admin API 的社区控制台。
+          源码：<a href="https://github.com/rdshoep/sub2api-extension">rdshoep/sub2api-extension</a>
         </p>
         <p data-lang="en">
           Not the official <a href="https://github.com/Wei-Shaw/sub2api">Sub2API</a> extension — a community console over its Admin API.
@@ -274,6 +331,12 @@ pnpm build</pre>
       toggle.addEventListener('click', () => {
         apply(document.documentElement.lang === 'zh-CN' ? 'en' : 'zh-CN')
       })
+      fetch('./downloads/latest.json')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data?.version) document.getElementById('ext-version').textContent = data.version
+        })
+        .catch(() => {})
     </script>
   </body>
 </html>

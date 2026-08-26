@@ -88,18 +88,34 @@ export function createMockFetch(opts: { betaDown?: boolean } = {}) {
       return json(envelope({ stats: { [String(u.id)]: { user_id: u.id, today_actual_cost: 1.25, total_actual_cost: 8 } } }))
     }
     if (path === '/api/v1/admin/dashboard/snapshot-v2' && method === 'GET') {
+      const start = url.searchParams.get('start_date') || snapshot.start_date
+      const end = url.searchParams.get('end_date') || snapshot.end_date
+      const startMs = Date.parse(start)
+      const endMs = Date.parse(end)
+      const span =
+        Number.isFinite(startMs) && Number.isFinite(endMs) ? Math.max(1, Math.round((endMs - startMs) / 86_400_000) + 1) : 1
+      const models = (snapshot.models ?? []).map((m) => ({
+        ...m,
+        requests: m.requests * span,
+        total_tokens: (m.total_tokens ?? 0) * span,
+        actual_cost: (m.actual_cost ?? 0) * span,
+        account_cost: (m.account_cost ?? 0) * span,
+      }))
       return json(
         envelope({
           ...snapshot,
+          start_date: start,
+          end_date: end,
+          models,
           trend: [
-            { date: `${snapshot.start_date}T00:00:00Z`, requests: Math.round(snapshot.stats.today_requests / 2), total_tokens: Math.round(snapshot.stats.today_tokens / 2), actual_cost: snapshot.stats.today_actual_cost / 2 },
-            { date: `${snapshot.start_date}T12:00:00Z`, requests: snapshot.stats.today_requests, total_tokens: snapshot.stats.today_tokens, actual_cost: snapshot.stats.today_actual_cost },
+            { date: `${start}T00:00:00Z`, requests: Math.round(snapshot.stats.today_requests / 2) * span, total_tokens: Math.round(snapshot.stats.today_tokens / 2) * span, actual_cost: (snapshot.stats.today_actual_cost / 2) * span },
+            { date: `${end}T12:00:00Z`, requests: snapshot.stats.today_requests * span, total_tokens: snapshot.stats.today_tokens * span, actual_cost: snapshot.stats.today_actual_cost * span },
           ],
           users_trend: [
-            { date: `${snapshot.start_date}T00:00:00Z`, user_id: 10, email: 'ops@example.test', username: 'ops', tokens: Math.round(snapshot.stats.today_tokens / 3), requests: 20 },
-            { date: `${snapshot.start_date}T12:00:00Z`, user_id: 10, email: 'ops@example.test', username: 'ops', tokens: snapshot.stats.today_tokens, requests: 80 },
-            { date: `${snapshot.start_date}T00:00:00Z`, user_id: 11, email: 'dev@example.test', username: 'dev', tokens: 800, requests: 10 },
-            { date: `${snapshot.start_date}T12:00:00Z`, user_id: 11, email: 'dev@example.test', username: 'dev', tokens: 1200, requests: 15 },
+            { date: `${start}T00:00:00Z`, user_id: 10, email: 'ops@example.test', username: 'ops', tokens: Math.round(snapshot.stats.today_tokens / 3) * span, requests: 20 * span },
+            { date: `${end}T12:00:00Z`, user_id: 10, email: 'ops@example.test', username: 'ops', tokens: snapshot.stats.today_tokens * span, requests: 80 * span },
+            { date: `${start}T00:00:00Z`, user_id: 11, email: 'dev@example.test', username: 'dev', tokens: 800 * span, requests: 10 * span },
+            { date: `${end}T12:00:00Z`, user_id: 11, email: 'dev@example.test', username: 'dev', tokens: 1200 * span, requests: 15 * span },
           ],
         }),
       )

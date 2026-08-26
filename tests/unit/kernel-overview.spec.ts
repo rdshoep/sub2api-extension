@@ -49,6 +49,23 @@ describe('kernel multi-instance overview', () => {
     expect(cached.aggregated.userSeries.map((s) => s.label)).toEqual(fresh.aggregated.userSeries.map((s) => s.label))
   })
 
+  it('updates actual cost and account cost together when the overview range changes', async () => {
+    const { kernel } = createTestKernel()
+    const added = await kernel.addConnection({
+      name: 'Alpha',
+      baseUrl: ALPHA_ORIGIN,
+      authMode: 'admin-api-key',
+      secret: 'session-alpha',
+      readOnly: true,
+    })
+    const today = await kernel.getOverview(added.id, 'today')
+    const last24h = await kernel.getOverview(added.id, '24h')
+    expect(today.aggregated.accountCost).toBe(0.8)
+    expect(last24h.aggregated.actualCost).not.toBe(today.aggregated.actualCost)
+    expect(last24h.aggregated.accountCost).not.toBe(today.aggregated.accountCost)
+    expect(last24h.aggregated.accountCost).toBeGreaterThan(today.aggregated.accountCost)
+  })
+
   it('keeps alpha data when beta is down', async () => {
     const { kernel } = createTestKernel({ betaDown: true })
     await kernel.addConnection({

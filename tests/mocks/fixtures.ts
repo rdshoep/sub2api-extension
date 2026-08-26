@@ -92,7 +92,7 @@ export const alphaSnapshot = {
     ratelimit_accounts: 0,
     error_accounts: 0,
   },
-  models: [{ model: 'claude-sonnet', requests: 80, total_tokens: 4000, actual_cost: 1.0 }],
+  models: [{ model: 'claude-sonnet', requests: 80, total_tokens: 4000, actual_cost: 1.0, account_cost: 0.8 }],
 }
 
 export const betaSnapshot = {
@@ -110,7 +110,7 @@ export const betaSnapshot = {
     ratelimit_accounts: 0,
     error_accounts: 1,
   },
-  models: [{ model: 'gpt-4.1', requests: 50, total_tokens: 2000, actual_cost: 0.4 }],
+  models: [{ model: 'gpt-4.1', requests: 50, total_tokens: 2000, actual_cost: 0.4, account_cost: 0.2 }],
 }
 
 export const alphaErrors = {

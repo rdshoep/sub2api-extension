@@ -65,6 +65,7 @@ export interface RawModelStat {
   requests: number
   total_tokens?: number
   actual_cost?: number
+  account_cost?: number
 }
 
 export interface RawErrorLog {
@@ -196,6 +197,7 @@ export function normalizeTodaySnapshot(input: {
   requests?: number
   tokens?: number
   actualCost?: number
+  accountCost?: number
   trend?: Array<{ date?: string; requests?: number; total_tokens?: number }>
   usersTrend?: Array<{ date?: string; user_id?: number; email?: string; username?: string; tokens?: number; requests?: number }>
 }): TodaySnapshot {
@@ -208,7 +210,7 @@ export function normalizeTodaySnapshot(input: {
     requests: input.requests ?? stats.today_requests ?? 0,
     tokens: input.tokens ?? stats.today_tokens ?? 0,
     actualCost: input.actualCost ?? stats.today_actual_cost ?? 0,
-    accountCost: stats.today_account_cost,
+    accountCost: input.accountCost ?? stats.today_account_cost ?? 0,
     errorCount: input.errorCount,
     errorRate: input.errorRate,
     rpm: stats.rpm,
