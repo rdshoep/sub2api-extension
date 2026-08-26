@@ -1,0 +1,233 @@
+import { expect, test } from '@playwright/test'
+import { ALPHA_ORIGIN, BETA_ORIGIN } from '../mocks/fixtures'
+
+test.describe.configure({ mode: 'serial' })
+
+async function useChinese(page: import('@playwright/test').Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem('sub2api:locale', 'zh')
+  })
+}
+
+async function stubWindowOpen(page: import('@playwright/test').Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem('sub2api:locale', 'zh')
+    ;(window as unknown as { __openedUrls: string[] }).__openedUrls = []
+    window.open = (url?: string | URL) => {
+      ;(window as unknown as { __openedUrls: string[] }).__openedUrls.push(String(url ?? ''))
+      return null
+    }
+  })
+}
+
+test('core console flows against mock Sub2API', async ({ page }) => {
+  await stubWindowOpen(page)
+  await page.goto('/')
+
+  await page.getByTestId('instance-name').fill('Alpha')
+  await page.getByTestId('instance-url').fill(ALPHA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-alpha')
+  await page.locator('input[type="checkbox"]').first().uncheck()
+  await page.getByTestId('add-instance-submit').click()
+  await expect(page.getByTestId('connection-card').first()).toContainText('Alpha')
+
+  await page.getByTestId('instance-name').fill('Beta')
+  await page.getByTestId('instance-url').fill(BETA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-beta')
+  await page.getByTestId('add-instance-submit').click()
+  await expect(page.getByTestId('connection-card')).toHaveCount(2)
+
+  await page.getByTestId('nav-overview').click()
+  await page.getByTestId('instance-tab-all').click()
+  await expect(page.getByTestId('metric-requests')).toContainText('150')
+  await expect(page.getByTestId('metric-actualCost')).toContainText('$')
+  await expect(page.getByTestId('metric-accountCost')).toContainText('$')
+  await expect(page.getByTestId('overview-refresh')).toHaveCount(0)
+  await expect(page.getByTestId('overview-auto-refresh')).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.getByTestId('overview-auto-refresh')).toContainText('自动刷新 30s')
+  await page.getByTestId('overview-auto-refresh').click()
+  await expect(page.getByTestId('overview-auto-refresh')).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByTestId('overview-auto-refresh')).toContainText(/自动刷新 \d+s/)
+  await page.getByTestId('range-7d').click()
+  await expect(page.getByTestId('overview-range')).toContainText('近一周')
+  await expect(page.getByTestId('token-trend')).toBeVisible()
+  await expect(page.getByTestId('token-trend')).toContainText('ops')
+  await expect(page.getByTestId('token-trend')).toContainText('dev')
+  const chart = page.getByTestId('token-trend-svg')
+  const box = await chart.boundingBox()
+  expect(box).toBeTruthy()
+  await page.mouse.move(box!.x + box!.width * 0.8, box!.y + box!.height * 0.4)
+  await expect(page.getByTestId('trend-tooltip')).toBeVisible()
+  await expect(page.getByTestId('trend-tooltip')).toContainText('ops')
+  await expect(page.getByTestId('metric-normalAccounts')).toContainText('3')
+  await expect(page.getByTestId('metric-errorAccounts')).toContainText('1')
+
+  await page.getByTestId('nav-accounts').click()
+  await expect(page.getByTestId('account-card').first()).toContainText('5h')
+  await expect(page.getByTestId('account-card').first()).toContainText('%')
+  await expect(page.getByTestId('account-card').first()).not.toContainText('已用')
+  await expect(page.getByTestId('quota-reset-in').first()).toBeVisible()
+  await expect(page.getByTestId('quota-reset-in').first()).toContainText(/小时|分钟|天|即将刷新/)
+  await expect(page.getByTestId('refresh-account').first()).toBeVisible()
+  await expect(page.getByTestId('platform-logo-anthropic').or(page.getByTestId('platform-logo-openai')).first()).toBeVisible()
+  const second = page.getByTestId('account-card').nth(1)
+  const secondName = ((await second.getByTestId('account-name').textContent()) || '').trim()
+  await second.getByTestId('pin-account').click()
+  await expect(page.getByTestId('account-card').first().getByTestId('account-name')).toHaveText(secondName)
+
+  await page.getByRole('tab', { name: 'Alpha' }).click()
+  await page.getByTestId('nav-users').click()
+  await page.getByTestId('user-search').fill('ops')
+  await page.getByTestId('user-search').dispatchEvent('change')
+  await expect(page.getByTestId('user-row').first()).toContainText('(ops)')
+  await expect(page.getByTestId('user-balance').first()).toContainText('$12.50')
+  await page.getByTestId('user-row').click()
+  await expect(page.getByTestId('user-detail')).toContainText('ops@example.test')
+
+  await page.getByTestId('adjust-balance').click()
+  await page.getByTestId('balance-amount').fill('20')
+  await page.getByTestId('reason-input').fill('e2e balance')
+  await page.getByTestId('confirm-submit').click()
+  await expect(page.getByTestId('user-detail')).toContainText('20')
+
+  await page.getByTestId('reset-user-quota').click()
+  await page.getByTestId('quota-platform').selectOption('anthropic')
+  await page.getByTestId('quota-window').selectOption('daily')
+  await page.getByTestId('reason-input').fill('e2e quota reset')
+  await page.getByTestId('confirm-submit').click()
+
+  await page.getByTestId('nav-errors').click()
+  await expect(page.getByText('rate limited')).toBeVisible()
+
+  await page.getByTestId('open-admin').click()
+  await expect.poll(async () => page.evaluate(() => (window as unknown as { __openedUrls: string[] }).__openedUrls.at(-1) || '')).toContain('/admin/dashboard')
+})
+
+test('partial failure when beta is down', async ({ page }) => {
+  await useChinese(page)
+  await page.goto('/?betaDown=1')
+  await page.getByTestId('instance-name').fill('Alpha')
+  await page.getByTestId('instance-url').fill(ALPHA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-alpha')
+  await page.getByTestId('add-instance-submit').click()
+  await page.getByTestId('instance-name').fill('Beta')
+  await page.getByTestId('instance-url').fill(BETA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-beta')
+  await page.getByTestId('add-instance-submit').click()
+  await page.getByTestId('nav-overview').click()
+  await expect(page.getByTestId('partial-failure')).toBeVisible()
+  await expect(page.getByTestId('metric-requests')).toContainText('100')
+})
+
+test('reload keeps unlocked persisted credentials', async ({ page }) => {
+  await useChinese(page)
+  await page.goto('/')
+  await page.getByTestId('instance-name').fill('Alpha')
+  await page.getByTestId('instance-url').fill(ALPHA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('remembered-alpha')
+  await page.getByTestId('add-instance-submit').click()
+  await expect(page.getByTestId('connection-card').first()).toContainText('Alpha')
+  await expect(page.getByTestId('vault-status')).toContainText('available')
+  await expect(page.getByTestId('connection-card').first()).not.toContainText('remembered-alpha')
+  await expect(page.getByTestId('set-password')).toBeVisible()
+
+  await page.reload()
+  await page.getByTestId('nav-instances').click()
+  await expect(page.getByTestId('connection-card').first()).toContainText('Alpha')
+  await expect(page.getByTestId('connection-card').first()).toContainText('alpha.example.test')
+  await expect(page.getByTestId('vault-status')).toContainText('available')
+  await expect(page.getByTestId('reenter-secret')).toHaveCount(0)
+  await expect(page.getByTestId('connection-card').first()).not.toContainText('remembered-alpha')
+
+  await page.getByTestId('nav-overview').click()
+  await expect(page.getByTestId('metric-requests')).toContainText('100')
+})
+
+test('session-only credentials require re-enter after reload', async ({ page }) => {
+  await useChinese(page)
+  await page.goto('/')
+  await page.getByTestId('instance-name').fill('Alpha')
+  await page.getByTestId('instance-url').fill(ALPHA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-alpha')
+  await page.getByTestId('persist-secrets').uncheck()
+  await page.getByTestId('add-instance-submit').click()
+  await expect(page.getByTestId('connection-card').first()).toContainText('Alpha')
+  await expect(page.getByTestId('vault-status')).toContainText('available')
+
+  await page.reload()
+  await page.getByTestId('nav-instances').click()
+  await expect(page.getByTestId('vault-status')).toContainText('missing')
+  await expect(page.getByTestId('reenter-secret')).toBeVisible()
+  await page.getByTestId('reenter-secret').fill('session-only-alpha')
+  await page.getByTestId('reenter-submit').click()
+  await expect(page.getByTestId('vault-status')).toContainText('available')
+})
+
+test('can set and remove a vault password on a remembered account', async ({ page }) => {
+  await useChinese(page)
+  await page.goto('/')
+  await page.getByTestId('instance-name').fill('Alpha')
+  await page.getByTestId('instance-url').fill(ALPHA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('remembered-alpha')
+  await page.getByTestId('add-instance-submit').click()
+  await expect(page.getByTestId('set-password')).toBeVisible()
+  await page.getByTestId('set-password-input').fill('correct-horse')
+  await page.getByTestId('set-password').click()
+  await expect(page.getByTestId('clear-password')).toBeVisible()
+
+  await page.getByTestId('lock-vault').click()
+  await expect(page.getByTestId('vault-status')).toContainText('locked')
+  await page.getByTestId('unlock-vault').click()
+  await page.getByTestId('unlock-password').fill('correct-horse')
+  await page.getByTestId('unlock-submit').click()
+  await expect(page.getByTestId('vault-status')).toContainText('available')
+  await page.getByTestId('clear-password').click()
+  await expect(page.getByTestId('set-password')).toBeVisible()
+  await page.getByTestId('lock-vault').click()
+  await expect(page.getByTestId('vault-status')).toContainText('available')
+})
+
+test('remembers last selected instance tab after reload', async ({ page }) => {
+  await useChinese(page)
+  await page.goto('/')
+  await page.getByTestId('instance-name').fill('Alpha')
+  await page.getByTestId('instance-url').fill(ALPHA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-alpha')
+  await page.getByTestId('add-instance-submit').click()
+  await expect(page.getByTestId('connection-card').first()).toContainText('Alpha')
+  await page.getByTestId('instance-name').fill('Beta')
+  await page.getByTestId('instance-url').fill(BETA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-beta')
+  await page.getByTestId('add-instance-submit').click()
+  await expect(page.getByTestId('connection-card')).toHaveCount(2)
+  await page.getByRole('tab', { name: 'Beta' }).click()
+  await expect(page.getByRole('tab', { name: 'Beta' })).toHaveAttribute('aria-selected', 'true')
+
+  await page.reload()
+  await expect(page.getByRole('tab', { name: 'Beta' })).toHaveAttribute('aria-selected', 'true')
+})
+
+test('switches UI language', async ({ page }) => {
+  await useChinese(page)
+  await page.goto('/')
+  await page.getByTestId('instance-name').fill('Alpha')
+  await page.getByTestId('instance-url').fill(ALPHA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-alpha')
+  await page.getByTestId('add-instance-submit').click()
+  await expect(page.getByTestId('instance-tab-all')).toHaveText('全部实例')
+  await page.getByTestId('locale-toggle').click()
+  await expect(page.getByTestId('instance-tab-all')).toHaveText('All instances')
+})
+
+test('read-only connection still lists accounts', async ({ page }) => {
+  await useChinese(page)
+  await page.goto('/')
+  await page.getByTestId('instance-name').fill('RO')
+  await page.getByTestId('instance-url').fill(ALPHA_ORIGIN)
+  await page.getByTestId('instance-secret').fill('session-only-ro')
+  await page.getByTestId('add-instance-submit').click()
+  await page.getByRole('tab', { name: 'RO' }).click()
+  await page.getByTestId('nav-accounts').click()
+  await expect(page.getByTestId('account-card').first()).toBeVisible()
+  await expect(page.getByTestId('reset-account-quota')).toHaveCount(0)
+})

@@ -1,0 +1,35 @@
+{
+  "id": "sub2api",
+  "version": 1,
+  "displayName": "Sub2API",
+  "themePreset": "sub2api",
+  "capabilities": [
+    "platform.probe",
+    "accounts.list",
+    "accounts.quota.read",
+    "accounts.quota.refresh",
+    "accounts.quota.reset",
+    "users.list",
+    "users.balance.read",
+    "users.balance.write",
+    "users.quota.read",
+    "users.quota.reset",
+    "stats.today.read",
+    "stats.models.read",
+    "errors.read",
+    "errors.detail.read",
+    "links.open"
+  ],
+  "queries": [
+    "stats.today",
+    "stats.models.today",
+    "errors.latest",
+    "accounts.list",
+    "users.list"
+  ],
+  "actions": [
+    "user.balance.adjust",
+    "user.quota.reset",
+    "accounts.quota.reset"
+  ]
+}

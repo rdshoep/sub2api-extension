@@ -1,0 +1,108 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition;
+    @apply focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply text-white shadow-md;
+    background-image: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  }
+  .btn-secondary {
+    @apply border;
+    background: var(--bg-card);
+    border-color: var(--border-subtle);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+  }
+  .btn-danger {
+    @apply text-white;
+    background-image: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+  .card {
+    @apply rounded-3xl border p-3;
+    background: var(--bg-card);
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-card);
+  }
+  .field {
+    @apply w-full rounded-xl border bg-transparent px-3 py-2 text-sm;
+    border-color: var(--border-subtle);
+  }
+}
+
+.skeleton {
+  border-radius: 0.75rem;
+  background-color: color-mix(in srgb, var(--text-muted) 14%, var(--bg-card));
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--text-muted) 22%, transparent),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.request-progress-bar {
+  animation: request-progress 1s ease-in-out infinite;
+}
+
+@keyframes request-progress {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+.panel-fade {
+  animation: panel-fade 220ms ease-out;
+}
+
+@keyframes panel-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.digit-window {
+  display: inline-block;
+  height: 1.15em;
+  overflow: hidden;
+  line-height: 1.15em;
+}
+
+.digit-reel {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.digit-cell {
+  display: block;
+  height: 1.15em;
+  line-height: 1.15em;
+}

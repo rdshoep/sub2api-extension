@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sub2API Console</title>
+    <meta
+      name="description"
+      content="Chrome / Edge multi-instance Sub2API operations console. Quota, usage, users, and errors in a 480×600 popup."
+    />
+    <link rel="icon" href="./icon/logo.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon/128.png" />
+    <style>
+      :root {
+        --primary: #14b8a6;
+        --primary-dark: #0f766e;
+        --page: #f8fafc;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC',
+          'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        line-height: 1.55;
+      }
+      a {
+        color: var(--primary-dark);
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+        background: var(--card);
+      }
+      .bar,
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      .bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 56px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 650;
+        text-decoration: none;
+        color: inherit;
+      }
+      .brand img {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 13px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+      }
+      .hero {
+        padding: 40px 0 16px;
+        text-align: center;
+      }
+      .hero h1 {
+        margin: 12px 0 8px;
+        font-size: 28px;
+      }
+      .hero p {
+        margin: 0 auto;
+        max-width: 640px;
+        color: var(--muted);
+      }
+      .shots {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        padding: 24px 0 8px;
+      }
+      figure {
+        margin: 0;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+      figure img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      figcaption {
+        padding: 10px 12px;
+        font-size: 13px;
+        color: var(--muted);
+        border-top: 1px solid var(--border);
+      }
+      section {
+        padding: 12px 0 8px;
+      }
+      h2 {
+        font-size: 18px;
+        margin: 18px 0 8px;
+      }
+      ul {
+        margin: 0;
+        padding-left: 18px;
+        color: #334155;
+      }
+      pre {
+        overflow: auto;
+        background: #0f172a;
+        color: #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 13px;
+      }
+      footer {
+        margin-top: 32px;
+        padding: 20px 0 40px;
+        color: var(--muted);
+        font-size: 13px;
+        border-top: 1px solid var(--border);
+      }
+      [data-lang] {
+        display: none;
+      }
+      html[lang='zh-CN'] [data-lang='zh'],
+      html[lang='en'] [data-lang='en'] {
+        display: revert;
+      }
+      @media (max-width: 720px) {
+        .shots {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="bar">
+        <a class="brand" href="./">
+          <img src="./icon/logo.svg" alt="" />
+          Sub2API Console
+        </a>
+        <div class="actions">
+          <button class="btn" id="lang-toggle" type="button">English</button>
+          <a class="btn primary" href="https://github.com/rdshoep/sub2api-extension">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="hero">
+        <img src="./icon/128.png" width="72" height="72" alt="Sub2API Console" />
+        <h1 data-lang="zh">Chrome / Edge 上的 Sub2API 多实例控制台</h1>
+        <h1 data-lang="en">A multi-instance Sub2API console for Chrome / Edge</h1>
+        <p data-lang="zh">
+          点一下工具栏图标，就能看额度、用量、用户和异常，而不用打开后台网页。480×600 弹窗，不注入页面。
+        </p>
+        <p data-lang="en">
+          Click the toolbar icon to see quota, usage, users, and errors — without opening the admin site. 480×600 popup, no content scripts.
+        </p>
+      </div>
+
+      <div class="shots">
+        <figure>
+          <img src="./images/screenshot-overview.png" alt="Overview" width="480" />
+          <figcaption data-lang="zh">概览：24 小时指标、多用户 Token 趋势、自动刷新倒计时</figcaption>
+          <figcaption data-lang="en">Overview: 24h metrics, per-user token trend, auto-refresh countdown</figcaption>
+        </figure>
+        <figure>
+          <img src="./images/screenshot-accounts.png" alt="Accounts" width="480" />
+          <figcaption data-lang="zh">账号：5h / 7d 环形剩余、刷新倒计时、置顶与单卡刷新</figcaption>
+          <figcaption data-lang="en">Accounts: 5h / 7d remaining rings, reset countdown, pin and per-card refresh</figcaption>
+        </figure>
+      </div>
+
+      <section>
+        <h2 data-lang="zh">能做什么</h2>
+        <h2 data-lang="en">What it does</h2>
+        <ul data-lang="zh">
+          <li>添加任意数量 Sub2API 站点，在「全部实例」和某一台之间切换</li>
+          <li>概览把请求量、Token、费用、错误加总；配额剩余不会被平均掉</li>
+          <li>账号卡片显示平台 Logo 和 5h / 7d 剩余；数据过期时圆环变灰仍保留进度</li>
+          <li>用户按今日消费排序，可调整余额或重置平台窗口（需允许写入）</li>
+          <li>凭证默认记住且不锁密钥；也可为单个实例配置密码锁定</li>
+        </ul>
+        <ul data-lang="en">
+          <li>Add any number of Sub2API sites; switch All instances vs a single site</li>
+          <li>Overview sums requests, tokens, cost, and errors — remaining quota is never averaged</li>
+          <li>Account cards show platform logos and 5h / 7d remaining; stale rings stay gray with last progress</li>
+          <li>Users ranked by today’s spend; optional balance / quota writes with a reason</li>
+          <li>Secrets are remembered without a password by default; optional per-instance lock</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 data-lang="zh">安装</h2>
+        <h2 data-lang="en">Install</h2>
+        <p data-lang="zh">需要 Node.js 20+ 和 pnpm。克隆仓库后：</p>
+        <p data-lang="en">Node.js 20+ and pnpm. After cloning:</p>
+        <pre>pnpm install
+pnpm build</pre>
+        <ul data-lang="zh">
+          <li>打开 chrome://extensions 或 edge://extensions</li>
+          <li>打开开发者模式，加载已解压的扩展，选中 <code>.output/chrome-mv3</code></li>
+          <li>把图标钉到工具栏后点击即可</li>
+        </ul>
+        <ul data-lang="en">
+          <li>Open chrome://extensions or edge://extensions</li>
+          <li>Enable Developer mode, Load unpacked, select <code>.output/chrome-mv3</code></li>
+          <li>Pin the icon and click it</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p data-lang="zh">
+          这不是 <a href="https://github.com/Wei-Shaw/sub2api">Sub2API</a> 官方扩展，而是对接其 Admin API 的社区控制台。源码：
+          <a href="https://github.com/rdshoep/sub2api-extension">rdshoep/sub2api-extension</a>
+        </p>
+        <p data-lang="en">
+          Not the official <a href="https://github.com/Wei-Shaw/sub2api">Sub2API</a> extension — a community console over its Admin API.
+          Source: <a href="https://github.com/rdshoep/sub2api-extension">rdshoep/sub2api-extension</a>
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      const KEY = 'sub2api-pages-locale'
+      const toggle = document.getElementById('lang-toggle')
+      function locale() {
+        const saved = localStorage.getItem(KEY)
+        if (saved === 'en' || saved === 'zh-CN') return saved
+        return navigator.language.toLowerCase().startsWith('zh') ? 'zh-CN' : 'en'
+      }
+      function apply(next) {
+        document.documentElement.lang = next
+        toggle.textContent = next === 'zh-CN' ? 'English' : '中文'
+        localStorage.setItem(KEY, next)
+      }
+      apply(locale())
+      toggle.addEventListener('click', () => {
+        apply(document.documentElement.lang === 'zh-CN' ? 'en' : 'zh-CN')
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sub2api.local/schemas/panel-spec.schema.json",
+  "title": "PanelSpec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "pack", "views"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "adapter", "minAdapterVersion"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "adapter": { "type": "string", "minLength": 1 },
+        "minAdapterVersion": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preset": { "type": "string" },
+        "tokens": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "queries": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "capability": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "views": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["widgets"],
+        "properties": {
+          "scopes": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["all-instances", "instance"] }
+          },
+          "widgets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": { "type": "string" },
+                "query": { "type": "string" },
+                "fields": { "type": "array", "items": { "type": "string" } },
+                "limit": { "type": "integer", "minimum": 1 },
+                "itemComponent": { "type": "string" },
+                "itemProps": { "type": "object" },
+                "empty": { "type": "string" },
+                "loading": { "type": "string" },
+                "error": { "type": "string" },
+                "unsupported": { "type": "string" },
+                "formatter": { "type": "string" },
+                "capability": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["capability"],
+        "properties": {
+          "capability": { "type": "string" },
+          "confirmation": {
+            "type": "object",
+            "properties": {
+              "showBeforeAfter": { "type": "boolean" },
+              "requireReason": { "type": "boolean" },
+              "requireTargetIdentity": { "type": "boolean" },
+              "verifyAfterWrite": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

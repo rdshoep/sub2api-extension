@@ -1,0 +1,81 @@
+schemaVersion: 1
+pack:
+  id: sub2api-admin
+  adapter: sub2api
+  minAdapterVersion: 1
+
+theme:
+  preset: sub2api
+
+queries:
+  stats.today:
+    capability: stats.today.read
+  stats.models.today:
+    capability: stats.models.read
+  errors.latest:
+    capability: errors.read
+  accounts.list:
+    capability: accounts.list
+  users.list:
+    capability: users.list
+
+views:
+  overview:
+    scopes: [all-instances, instance]
+    widgets:
+      - type: MetricGrid
+        query: stats.today
+        fields: [requests, tokens, actualCost, errorCount, rpm, tpm]
+        empty: empty
+        loading: loading
+        error: error
+      - type: ModelUsageTable
+        query: stats.models.today
+      - type: ErrorFeed
+        query: errors.latest
+        limit: 10
+
+  accounts:
+    scopes: [instance, all-instances]
+    widgets:
+      - type: EntityGrid
+        query: accounts.list
+        itemComponent: AccountQuotaCard
+        itemProps:
+          preferredWindows: [five-hour, seven-day]
+
+  users:
+    scopes: [instance]
+    widgets:
+      - type: EntityTable
+        query: users.list
+
+  errors:
+    scopes: [instance, all-instances]
+    widgets:
+      - type: ErrorFeed
+        query: errors.latest
+        unsupported: unsupported
+
+actions:
+  user.balance.adjust:
+    capability: users.balance.write
+    confirmation:
+      showBeforeAfter: true
+      requireReason: true
+      requireTargetIdentity: true
+      verifyAfterWrite: true
+  user.quota.reset:
+    capability: users.quota.reset
+    confirmation:
+      showBeforeAfter: true
+      requireReason: true
+      requireTargetIdentity: true
+      verifyAfterWrite: true
+  accounts.quota.reset:
+    capability: accounts.quota.reset
+    confirmation:
+      showBeforeAfter: true
+      requireReason: true
+      requireTargetIdentity: true
+      verifyAfterWrite: true
