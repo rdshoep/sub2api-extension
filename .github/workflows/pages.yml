@@ -1,5 +1,6 @@
 name: Deploy GitHub Pages
 
+# Publishes site/ to https://rdshoep.com/sub2api-extension/
 on:
   push:
     branches: [main]
