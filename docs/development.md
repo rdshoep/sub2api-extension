@@ -43,7 +43,7 @@ Write tests against production are out of scope. Use the mock (`tests/mocks`) fo
 ## GitHub Pages
 
 Push to `main` deploys `site/` via `.github/workflows/pages.yml`.
-Public URL: https://rdshoep.github.io/sub2api-extension/
+Public URL: https://rdshoep.com/sub2api-extension/
 
 Screenshots live in `docs/images/` (README) and are copied into `site/images/` for the landing page.
 

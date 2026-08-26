@@ -23,7 +23,7 @@
 
 界面语言跟随浏览器（中文 / 英文），也可在弹窗底部手动切换。
 
-介绍页：[rdshoep.github.io/sub2api-extension](https://rdshoep.github.io/sub2api-extension/)
+介绍页：[rdshoep.com/sub2api-extension](https://rdshoep.com/sub2api-extension/)
 
 <p align="center">
   <img src="docs/images/screenshot-overview.png" width="480" alt="概览：24 小时指标、多用户 Token 趋势、自动刷新倒计时">

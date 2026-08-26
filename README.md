@@ -23,7 +23,7 @@ One Sub2API instance is fine in the admin UI. Several instances means tab-hoppin
 
 The UI follows your browser language (Chinese or English) and can be switched from the popup footer.
 
-Landing page: [rdshoep.github.io/sub2api-extension](https://rdshoep.github.io/sub2api-extension/)
+Landing page: [rdshoep.com/sub2api-extension](https://rdshoep.com/sub2api-extension/)
 
 <p align="center">
   <img src="docs/images/screenshot-overview.png" width="480" alt="Overview: 24h metrics, per-user token trend, auto-refresh countdown">
